@@ -49,7 +49,7 @@ def login(user_name, password):
     except Exception as e:
         print(f"[{user_name}] \tCouldn't login... try again in an hour \n {e}")
         sleep(60 * 60)
-        exit()  # Docker will reboot the container
+        return login(user_name, password)
     print(f"[{user_name}] \tLogin Successful!")
     return cl
 
