@@ -106,18 +106,15 @@ def bot_thread(username, password, hashtag, monitor_usernames):
 
 def main():
     settings = get_settings()
+    threads = []
     for account in settings:
         username = account["username"]
         password = account["password"]
         hashtag = account["hashtag"]
         monitor_usernames = account["monitor_usernames"]
-
-        thread = threading.Thread(
-            target=bot_thread,
-            args=(
-                username, password, hashtag, monitor_usernames
-            )
-        )
+        threads.append(threading.Thread(target=bot_thread, args=(
+            username, password, hashtag, monitor_usernames)))
+    for thread in threads:
         thread.start()
 
 
