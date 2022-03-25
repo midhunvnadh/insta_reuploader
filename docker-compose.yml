@@ -1,7 +1,0 @@
-version: "2.1"
-services:
-  autopostig:
-    container_name: autopostig
-    hostname: autopostig
-    build: .
-    restart: unless-stopped
