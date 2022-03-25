@@ -1,0 +1,4 @@
+/__pycache__
+/config
+/data/*.json
+/data/downloads/*
