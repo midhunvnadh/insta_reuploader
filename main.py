@@ -47,7 +47,8 @@ def login(user_name, password):
     try:
         cl.login(user_name, password)
     except Exception as e:
-        print(f"[{user_name}] \tCouldn't login... try again in an hour \n {e}")
+        print(f"[{user_name}] \tCouldn't login... try again in an hour")
+        print(f"[{user_name}] \t{e}")
         sleep(60 * 60)
         return login(user_name, password)
     print(f"[{user_name}] \tLogin Successful!")
@@ -77,9 +78,9 @@ def download_and_upload(cl, to_post, hashtag, own_username):
         print(f"[{own_username}] \tPosting video...")
         cl.video_upload(path, sub, usertags=[poster_username_tag])
     elif media_type == 2 and product_type == "igtv":
-        path = cl.video_download(pk, igtv_title, path)
+        path = cl.video_download(pk, path)
         print(f"[{own_username}] \tPosting video...")
-        cl.igtv_upload(path, sub, usertags=[poster_username_tag])
+        cl.igtv_upload(path, igtv_title, sub, usertags=[poster_username_tag])
     elif media_type == 2 and product_type == "clips":
         path = cl.video_download(pk, path)
         print(f"[{own_username}] \tPosting video...")
