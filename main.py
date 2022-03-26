@@ -1,4 +1,3 @@
-from asyncio import current_task
 from instagrapi import Client
 from time import sleep
 from hastags import get_hashtags
