@@ -27,20 +27,31 @@ def get_best_content_to_post(cl, best_pages, username):
             print(f"[{username}] \tGetting media from page:", page)
             posts = cl.user_medias(user_id, 5)
             for post in posts:
-                if check_if_posted(post.code, username):
+                pk = cl.media_pk_from_code(post.code)
+                try:
+                    post = cl.media_info(pk).dict()
+                except:
+                    try:
+                        post = cl.media_info_gql(pk)
+                    except:
+                        continue
+                if check_if_posted(post["code"], username):
                     continue
-                if post.media_type == 8:
+                if post["media_type"] == 8:
                     continue
-                if post.product_type == "igtv":
+                if(post["product_type"] == "igtv"):
                     continue
                 medias.append(post)
         except Exception as e:
             print(f"[{username}] \tCouldn't get media from page:", page, e)
-    medias_sorted = sorted(medias, key=lambda k: k.like_count, reverse=True)
+    medias_sorted = sorted(medias, key=lambda k: k["like_count"], reverse=True)
 
-    media_to_post = medias_sorted[0]
-    pk = cl.media_pk_from_code(media_to_post.code)
-    return cl.media_info(pk).dict()
+    if(len(medias_sorted) == 0):
+        print(f"[{username}] \tNo posts to post... waiting for new posts!")
+        sleep(60*5)
+        return get_best_content_to_post(cl, best_pages, username)
+
+    return medias[0]
 
 
 def login(user_name, password):
@@ -68,7 +79,6 @@ def download_and_upload(cl, to_post, hashtag, own_username):
     media_code = to_post['code']
     media_type = to_post['media_type']
     product_type = to_post['product_type']
-    igtv_title = to_post["title"]
     pk = to_post['pk']
     path = f"data/downloads/{own_username}/"
     posted_username = to_post['user']['username']
@@ -76,7 +86,7 @@ def download_and_upload(cl, to_post, hashtag, own_username):
         user=cl.user_info_by_username(posted_username), x=0.5, y=0.5)
     hashtags = get_hashtags(hashtag)
     sub = f"Please follow for more!\nReuploaded from: @{posted_username}\n{hashtags} @midhunvnadh"
-    os.system(f"rm -rf {path}*")
+    igtv_title = f"Reuploaded from: @{posted_username}"
     print(f"[{own_username}] \tDownloading...")
     if(media_type == 1):
         path = cl.photo_download(pk, path)
@@ -88,12 +98,14 @@ def download_and_upload(cl, to_post, hashtag, own_username):
         cl.video_upload(path, sub, usertags=[poster_username_tag])
     elif media_type == 2 and product_type == "igtv":
         path = cl.video_download(pk, path)
-        print(f"[{own_username}] \tPosting video...")
-        cl.igtv_upload(path, igtv_title, sub, usertags=[poster_username_tag])
+        print("[{own_username}] \tPosting IGTV...", to_post)
+        cl.igtv_upload(path=path, title=igtv_title, caption=sub,
+                       usertags=[poster_username_tag])
     elif media_type == 2 and product_type == "clips":
         path = cl.video_download(pk, path)
         print(f"[{own_username}] \tPosting video...")
         cl.clip_upload(path, sub, usertags=[poster_username_tag])
+    os.system(f"rm -rf {path}*")
     add_to_posted(media_code, own_username)
 
 
