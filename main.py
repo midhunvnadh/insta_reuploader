@@ -6,6 +6,7 @@ from instagrapi.types import Usertag
 import os
 import json
 import threading
+from datetime import datetime
 
 
 def get_settings():
@@ -17,6 +18,12 @@ def get_settings():
             sleep(60)
             exit()
     return data
+
+
+def get_ret_ration(uploaded_time, current_time, likes):
+    duration = current_time - uploaded_time
+    dinm = divmod(duration.total_seconds(), 60)[0]
+    return (likes / dinm) * 100
 
 
 def get_best_content_to_post(cl, best_pages, username, retreive_count=5):
@@ -41,16 +48,19 @@ def get_best_content_to_post(cl, best_pages, username, retreive_count=5):
                     continue
                 if(post["product_type"] == "igtv"):
                     continue
-                medias.append(post)
+                uploaded_time = post["taken_at"].replace(tzinfo=None)
+                current_time = datetime.utcnow()
+                likes = post["like_count"]
+                ret_ratio = get_ret_ration(uploaded_time, current_time, likes)
+                medias.append({"ret_ratio": ret_ratio, "post": post})
         except Exception as e:
             print(f"[{username}] \tCouldn't get media from page:", page, e)
-    medias_sorted = sorted(medias, key=lambda k: k["like_count"], reverse=True)
+    medias_sorted = sorted(medias, key=lambda k: k["ret_ratio"], reverse=True)
 
     if(len(medias_sorted) == 0):
         print(f"[{username}] \tCouldn't find.. trying to get posts!")
         return get_best_content_to_post(cl, best_pages, username, retreive_count+5)
-
-    return medias[0]
+    return medias_sorted[0]["post"]
 
 
 def login(user_name, password):
@@ -113,16 +123,33 @@ def post_to_account(cl, hashtag, monitor_usernames, username):
     download_and_upload(cl, to_post, hashtag, username)
 
 
-def bot_thread(username, password, hashtag, monitor_usernames):
+def get_follower_usernames(cl, username):
+    usernames = []
+    following_ids = cl.user_following(cl.user_id, 0)
+    for following_id in following_ids:
+        following_username = cl.username_from_user_id(following_id)
+        print(f"[{username}] \tFound {following_username} as a following account.")
+        usernames.append(following_username)
+    return usernames
+
+
+def bot_thread(username, password, hashtag):
 
     if(not os.path.exists(f"data/downloads/{username}")):
         os.makedirs(f"data/downloads/{username}", exist_ok=False)
 
     cl = login(username, password)
     while True:
-        post_to_account(cl, hashtag, monitor_usernames, username)
-        print(f"[{username}] \tPosting again in an hour...!")
-        sleep(60 * 59)
+        print(f"[{username}] \tGetting following usernames...")
+        monitor_usernames = get_follower_usernames(cl, username)
+        if(len(monitor_usernames) > 0):
+            post_to_account(cl, hashtag, monitor_usernames, username)
+            print(f"[{username}] \tPosting again in an hour...!")
+            sleep(60 * 59)
+        else:
+            print(
+                f"[{username}] \tYou are following none... sleeping for 2 minutes")
+            sleep(60 * 2)
 
 
 def main():
@@ -132,9 +159,8 @@ def main():
         username = account["username"]
         password = account["password"]
         hashtag = account["hashtag"]
-        monitor_usernames = account["monitor_usernames"]
         threads.append(threading.Thread(target=bot_thread, args=(
-            username, password, hashtag, monitor_usernames)))
+            username, password, hashtag)))
     for thread in threads:
         thread.start()
 
