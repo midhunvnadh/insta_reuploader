@@ -19,13 +19,13 @@ def get_settings():
     return data
 
 
-def get_best_content_to_post(cl, best_pages, username):
+def get_best_content_to_post(cl, best_pages, username, retreive_count=5):
     medias = []
     for page in best_pages:
         try:
             user_id = cl.user_id_from_username(page)
             print(f"[{username}] \tGetting media from page:", page)
-            posts = cl.user_medias(user_id, 5)
+            posts = cl.user_medias(user_id, retreive_count)
             for post in posts:
                 pk = cl.media_pk_from_code(post.code)
                 try:
@@ -47,9 +47,8 @@ def get_best_content_to_post(cl, best_pages, username):
     medias_sorted = sorted(medias, key=lambda k: k["like_count"], reverse=True)
 
     if(len(medias_sorted) == 0):
-        print(f"[{username}] \tNo posts to post... waiting for new posts!")
-        sleep(60*5)
-        return get_best_content_to_post(cl, best_pages, username)
+        print(f"[{username}] \tCouldn't find.. trying to get posts!")
+        return get_best_content_to_post(cl, best_pages, username, retreive_count+5)
 
     return medias[0]
 
