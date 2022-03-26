@@ -45,7 +45,13 @@ def login(user_name, password):
     cl = Client()
     print(f"[{user_name}] \tLogging in...")
     try:
-        cl.login(user_name, password)
+        session_file_path = f'data/session_{user_name}.json'
+        try:
+            cl.load_settings(session_file_path)
+            cl.login(user_name, password)
+        except:
+            cl.login(user_name, password)
+        cl.dump_settings(session_file_path)
     except Exception as e:
         print(f"[{user_name}] \tCouldn't login... try again in an hour")
         print(f"[{user_name}] \t{e}")
