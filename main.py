@@ -31,6 +31,8 @@ def get_best_content_to_post(cl, best_pages, username):
                     continue
                 if post.media_type == 8:
                     continue
+                if post.product_type == "igtv":
+                    continue
                 medias.append(post)
         except Exception as e:
             print(f"[{username}] \tCouldn't get media from page:", page, e)
@@ -48,9 +50,10 @@ def login(user_name, password):
         session_file_path = f'data/session_{user_name}.json'
         try:
             cl.load_settings(session_file_path)
-            cl.login(user_name, password)
+            print(f"[{user_name}] \tSession file found!!!")
         except:
-            cl.login(user_name, password)
+            pass
+        cl.login(user_name, password)
         cl.dump_settings(session_file_path)
     except Exception as e:
         print(f"[{user_name}] \tCouldn't login... try again in an hour")
