@@ -1,8 +1,6 @@
 from asyncio import current_task
 from instagrapi import Client
 from time import sleep
-
-from more_itertools import difference
 from hastags import get_hashtags
 from data_provider import check_if_posted, add_to_posted
 from instagrapi.types import Usertag
