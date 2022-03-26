@@ -172,8 +172,7 @@ def get_follower_usernames(cl, username):
     return usernames
 
 
-def bot_thread(username, password, hashtag):
-
+def bot(username, password, hashtag):
     if(not os.path.exists(f"data/downloads/{username}")):
         os.makedirs(f"data/downloads/{username}", exist_ok=False)
 
@@ -191,6 +190,15 @@ def bot_thread(username, password, hashtag):
             print(
                 f"[{username}] \tYou are following none... sleeping for 2 minutes")
             sleep(60 * 2)
+
+
+def bot_thread(username, password, hashtag):
+    try:
+        bot(username, password, hashtag)
+    except Exception as e:
+        print(f"[{username}] \tBot crashed... restarting", e)
+        sleep(60 * 60)
+        bot_thread(username, password, hashtag)
 
 
 def main():
