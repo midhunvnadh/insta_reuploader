@@ -3,10 +3,11 @@ from time import sleep
 from hastags import get_hashtags
 from data_provider import check_if_posted, add_to_posted
 from instagrapi.types import Usertag
+from datetime import datetime
 import os
 import json
 import threading
-from datetime import datetime
+import re
 
 
 def get_settings():
@@ -24,6 +25,10 @@ def get_ret_ration(uploaded_time, current_time, likes):
     duration = current_time - uploaded_time
     dinm = divmod(duration.total_seconds(), 60)[0]
     return (likes / dinm) * 100
+
+
+def get_hastags_in_string(string):
+    return re.findall(r"#(\w+)", string)
 
 
 def get_best_content_to_post(cl, best_pages, username, retreive_count=5):
@@ -93,7 +98,13 @@ def download_and_upload(cl, to_post, hashtag, own_username):
     posted_username = to_post['user']['username']
     poster_username_tag = Usertag(
         user=cl.user_info_by_username(posted_username), x=0.5, y=0.5)
-    hashtags = get_hashtags(hashtag)
+    hashtags = ""
+    try:
+        hashtag_from_caption = get_hastags_in_string(to_post['caption'])[0]
+        hashtags = get_hashtags(hashtag_from_caption)
+    except:
+        hashtags = get_hashtags(hashtag)
+
     sub = f"Please follow for more!\nReuploaded from: @{posted_username}\n{hashtags} @midhunvnadh"
     igtv_title = f"Reuploaded from: @{posted_username}"
     print(f"[{own_username}] \tDownloading...")
