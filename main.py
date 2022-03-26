@@ -1,13 +1,44 @@
+from asyncio import current_task
 from instagrapi import Client
 from time import sleep
+
+from more_itertools import difference
 from hastags import get_hashtags
 from data_provider import check_if_posted, add_to_posted
 from instagrapi.types import Usertag
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import json
 import threading
 import re
+
+
+def hours_until_end_of_today():
+    time_delta = datetime.combine(
+        datetime.utcnow().date() + timedelta(days=1), datetime.strptime("0000", "%H%M").time()
+    ) - datetime.utcnow()
+    return divmod(time_delta.seconds, 3600)[0]
+
+
+def get_sleep_period(cl):
+    n_medias_in_last_24 = 0
+    max_in_24 = 25
+    medias = cl.user_medias(cl.user_id, 25)
+    for media in medias:
+        code = cl.media_pk_from_code(media.code)
+        media = cl.media_info(code).dict()
+        uploaded_at = media["taken_at"].replace(tzinfo=None)
+        current_time = datetime.utcnow()
+        difference = current_time - uploaded_at
+        duration_in_s = difference.total_seconds()
+        hours = divmod(duration_in_s, 3600)[0]
+        if(hours < 24):
+            n_medias_in_last_24 += 1
+    hours_left = hours_until_end_of_today()
+    time_delay = (hours_left / (max_in_24 - n_medias_in_last_24)) * 60 * 60
+    processing_delay = 60 * 3
+    total_delay = time_delay + processing_delay
+    return total_delay
 
 
 def get_settings():
@@ -151,12 +182,14 @@ def bot_thread(username, password, hashtag):
 
     cl = login(username, password)
     while True:
+        sleep_delay = get_sleep_period(cl)
         print(f"[{username}] \tGetting following usernames...")
         monitor_usernames = get_follower_usernames(cl, username)
         if(len(monitor_usernames) > 0):
             post_to_account(cl, hashtag, monitor_usernames, username)
-            print(f"[{username}] \tPosting again in an hour...!")
-            sleep(60 * 59)
+            print(
+                f"[{username}] \tPosting again in {int(sleep_delay / 60)} minutes...!")
+            sleep(sleep_delay)
         else:
             print(
                 f"[{username}] \tYou are following none... sleeping for 2 minutes")
