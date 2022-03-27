@@ -108,23 +108,24 @@ def get_best_content_to_post(cl, best_pages, username, retreive_count=5):
     return medias_sorted[0]["post"]
 
 
-def login(user_name, password):
+def login(user_name, password, use_session_file=True):
     cl = Client()
     print(f"[{user_name}] \tLogging in...")
     try:
         session_file_path = f'data/session_{user_name}.json'
-        try:
-            cl.load_settings(session_file_path)
-            print(f"[{user_name}] \tSession file found!!!")
-        except:
-            pass
+        if(use_session_file):
+            try:
+                cl.load_settings(session_file_path)
+                print(f"[{user_name}] \tSession file found!!!")
+            except:
+                pass
         cl.login(user_name, password)
         cl.dump_settings(session_file_path)
     except Exception as e:
         print(f"[{user_name}] \tCouldn't login... try again in an hour")
         print(f"[{user_name}] \t{e}")
         sleep(60 * 60)
-        return login(user_name, password)
+        return login(user_name, password, use_session_file)
     print(f"[{user_name}] \tLogin Successful!")
     return cl
 
@@ -178,11 +179,11 @@ def get_follower_usernames(cl, username):
     return usernames
 
 
-def bot(username, password, hashtag):
+def bot(username, password, hashtag, use_session_file=True):
     if(not os.path.exists(f"data/downloads/{username}")):
         os.makedirs(f"data/downloads/{username}", exist_ok=False)
 
-    cl = login(username, password)
+    cl = login(username, password, use_session_file)
     while True:
         sleep_delay = get_sleep_period(cl, username)
         print(f"[{username}] \tGetting following usernames...")
@@ -203,8 +204,12 @@ def bot_thread(username, password, hashtag):
         bot(username, password, hashtag)
     except Exception as e:
         print(f"[{username}] \tBot crashed... restarting", e)
-        sleep(60 * 60)
-        bot_thread(username, password, hashtag)
+        if(e == "login_required"):
+            print(f"[{username}] \tLogin required... trying without session file!")
+            bot_thread(username, password, hashtag, use_session_file=False)
+        else:
+            bot_thread(username, password, hashtag)
+            sleep(60 * 60)
 
 
 def main():
