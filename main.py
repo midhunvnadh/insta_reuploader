@@ -142,7 +142,7 @@ def download_and_upload(cl, to_post, hashtag, own_username):
     except:
         hashtags = get_hashtags(hashtag)
 
-    sub = f"Please follow for more!\nReuploaded from: @{posted_username}\n{hashtags} @midhunvnadh"
+    sub = f"Please follow for more!\n{hashtags} @midhunvnadh"
     igtv_title = f"Reuploaded from: @{posted_username}"
     print(f"[{own_username}] \tDownloading...")
     if(media_type == 1):
