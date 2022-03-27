@@ -17,9 +17,10 @@ def hours_until_end_of_today():
     return divmod(time_delta.seconds, 3600)[0]
 
 
-def get_sleep_period(cl):
+def get_sleep_period(cl, username):
+    print(f"[{username}] \tGetting sleep period...")
     n_medias_in_last_24 = 0
-    max_in_24 = 25
+    max_in_24 = 280
     medias = cl.user_medias(cl.user_id, 25)
     for media in medias:
         code = cl.media_pk_from_code(media.code)
@@ -33,13 +34,16 @@ def get_sleep_period(cl):
             n_medias_in_last_24 += 1
     try:
         hours_left = hours_until_end_of_today()
-        time_delay = (hours_left / (max_in_24 - n_medias_in_last_24)) * 60 * 60
+        posts_left = (max_in_24 - n_medias_in_last_24)
+        time_delay = (hours_left / posts_left) * 60 * 60
         processing_delay = 60 * 3
         total_delay = time_delay + processing_delay
+        print(f"[{username}] \tPosts left: {posts_left}")
+        print(f"[{username}] \tHours left: {hours_left}")
     except:
         total_delay = 0
     if total_delay < 60:
-        total_delay = 60
+        total_delay = 60 * 60 * 2
     return total_delay
 
 
@@ -183,7 +187,7 @@ def bot(username, password, hashtag):
 
     cl = login(username, password)
     while True:
-        sleep_delay = get_sleep_period(cl)
+        sleep_delay = get_sleep_period(cl, username)
         print(f"[{username}] \tGetting following usernames...")
         monitor_usernames = get_follower_usernames(cl, username)
         if(len(monitor_usernames) > 0):
