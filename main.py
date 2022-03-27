@@ -33,6 +33,8 @@ def get_sleep_period(cl, username):
         hours = divmod(duration_in_s, 3600)[0]
         if(hours < 24):
             n_medias_in_last_24 += 1
+        else:
+            break
     try:
         hours_left = hours_until_end_of_today()
         posts_left = (max_in_24 - n_medias_in_last_24)
