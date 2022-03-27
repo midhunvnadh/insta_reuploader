@@ -203,10 +203,11 @@ def bot_thread(username, password, hashtag):
     try:
         bot(username, password, hashtag)
     except Exception as e:
-        print(f"[{username}] \tBot crashed... restarting", e)
+        print(f"[{username}] \tBot crashed... restarting", e[0:100])
         if(e == "login_required"):
             print(f"[{username}] \tLogin required... trying without session file!")
             bot_thread(username, password, hashtag, use_session_file=False)
+            sleep(60 * 60)
         else:
             bot_thread(username, password, hashtag)
             sleep(60 * 60)
