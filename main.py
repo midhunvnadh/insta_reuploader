@@ -148,11 +148,11 @@ def download_and_upload(cl, to_post, hashtag, own_username):
     if(media_type == 1):
         path = cl.photo_download(pk, path)
         print(f"[{own_username}] \tPosting photo...")
-        cl.photo_upload(path, sub, usertags=[poster_username_tag])
+        cl.photo_upload(path=path, caption=sub, usertags=[poster_username_tag])
     elif media_type == 2 and product_type == "feed":
         path = cl.video_download(pk, path)
         print(f"[{own_username}] \tPosting video...")
-        cl.video_upload(path, sub, usertags=[poster_username_tag])
+        cl.video_upload(path=path, caption=sub, usertags=[poster_username_tag])
     elif media_type == 2 and product_type == "igtv":
         path = cl.video_download(pk, path)
         print("[{own_username}] \tPosting IGTV...", to_post)
@@ -161,7 +161,7 @@ def download_and_upload(cl, to_post, hashtag, own_username):
     elif media_type == 2 and product_type == "clips":
         path = cl.video_download(pk, path)
         print(f"[{own_username}] \tPosting video...")
-        cl.clip_upload(path, sub, usertags=[poster_username_tag])
+        cl.clip_upload(path=path, caption=sub, usertags=[poster_username_tag])
     os.system(f"rm -rf {path}*")
     add_to_posted(media_code, own_username)
 
