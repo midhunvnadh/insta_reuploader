@@ -31,10 +31,15 @@ def get_sleep_period(cl):
         hours = divmod(duration_in_s, 3600)[0]
         if(hours < 24):
             n_medias_in_last_24 += 1
-    hours_left = hours_until_end_of_today()
-    time_delay = (hours_left / (max_in_24 - n_medias_in_last_24)) * 60 * 60
-    processing_delay = 60 * 3
-    total_delay = time_delay + processing_delay
+    try:
+        hours_left = hours_until_end_of_today()
+        time_delay = (hours_left / (max_in_24 - n_medias_in_last_24)) * 60 * 60
+        processing_delay = 60 * 3
+        total_delay = time_delay + processing_delay
+    except:
+        total_delay = 0
+    if total_delay < 60:
+        total_delay = 60
     return total_delay
 
 
