@@ -1,3 +1,4 @@
+from asyncio import subprocess
 from instagrapi import Client
 from time import sleep
 from hastags import get_hashtags
@@ -137,27 +138,25 @@ def download_and_upload(cl, to_post, hashtag, own_username):
         user=cl.user_info_by_username(posted_username), x=0.5, y=0.5)
 
     hashtags = get_hashtags(hashtag)
+    sub = f"Please follow for more!\n{hashtags}"
 
-    sub = f"Please follow for more!\n{hashtags} @midhunvnadh"
-    igtv_title = f"Reuploaded from: @{posted_username}"
     print(f"[{own_username}] \tDownloading...")
     if(media_type == 1):
         path = cl.photo_download(pk, path)
         print(f"[{own_username}] \tPosting photo...")
-        cl.photo_upload(path=path, caption=sub, usertags=[poster_username_tag])
+        cl.photo_upload(path=path, caption=sub)
     elif media_type == 2 and product_type == "feed":
         path = cl.video_download(pk, path)
         print(f"[{own_username}] \tPosting video...")
-        cl.video_upload(path=path, caption=sub, usertags=[poster_username_tag])
+        cl.video_upload(path=path, caption=sub)
     elif media_type == 2 and product_type == "igtv":
         path = cl.video_download(pk, path)
         print("[{own_username}] \tPosting IGTV...", to_post)
-        cl.igtv_upload(path=path, title=igtv_title, caption=sub,
-                       usertags=[poster_username_tag])
+        cl.igtv_upload(path=path, title=sub, caption=sub)
     elif media_type == 2 and product_type == "clips":
         path = cl.video_download(pk, path)
         print(f"[{own_username}] \tPosting video...")
-        cl.clip_upload(path=path, caption=sub, usertags=[poster_username_tag])
+        cl.clip_upload(path=path, caption=sub)
     os.system(f"rm -rf {path}*")
     add_to_posted(media_code, own_username)
 
