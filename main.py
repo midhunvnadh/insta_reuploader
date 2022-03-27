@@ -43,6 +43,8 @@ def get_sleep_period(cl, username):
         total_delay = 0
     if total_delay < 60:
         total_delay = 60 * 60 * 2
+    elif total_delay < 60 * 5:
+        total_delay = 60 * 7
     return total_delay
 
 
