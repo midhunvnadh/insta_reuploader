@@ -24,9 +24,7 @@ def get_sleep_period(cl, username):
     max_in_24 = 150
     medias = cl.user_medias(cl.user_id, max_in_24)
     for media in medias:
-        code = cl.media_pk_from_code(media.code)
-        media = cl.media_info(code).dict()
-        uploaded_at = media["taken_at"].replace(tzinfo=None)
+        uploaded_at = media.taken_at.replace(tzinfo=None)
         current_time = datetime.utcnow()
         difference = current_time - uploaded_at
         duration_in_s = difference.total_seconds()
