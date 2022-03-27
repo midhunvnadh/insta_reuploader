@@ -135,12 +135,8 @@ def download_and_upload(cl, to_post, hashtag, own_username):
     posted_username = to_post['user']['username']
     poster_username_tag = Usertag(
         user=cl.user_info_by_username(posted_username), x=0.5, y=0.5)
-    hashtags = ""
-    try:
-        hashtag_from_caption = get_hastags_in_string(to_post['caption'])[0]
-        hashtags = get_hashtags(hashtag_from_caption)
-    except:
-        hashtags = get_hashtags(hashtag)
+
+    hashtags = get_hashtags(hashtag)
 
     sub = f"Please follow for more!\n{hashtags} @midhunvnadh"
     igtv_title = f"Reuploaded from: @{posted_username}"
