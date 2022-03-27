@@ -99,7 +99,8 @@ def get_best_content_to_post(cl, best_pages, username, retreive_count=5):
                 ret_ratio = get_ret_ration(uploaded_time, current_time, likes)
                 medias.append({"ret_ratio": ret_ratio, "post": post})
         except Exception as e:
-            print(f"[{username}] \tCouldn't get media from page:", page, e)
+            print(f"[{username}] \tCouldn't get media from page:",
+                  page, str(e)[0:100])
     medias_sorted = sorted(medias, key=lambda k: k["ret_ratio"], reverse=True)
 
     if(len(medias_sorted) == 0):
@@ -123,7 +124,7 @@ def login(user_name, password, use_session_file=True):
         cl.dump_settings(session_file_path)
     except Exception as e:
         print(f"[{user_name}] \tCouldn't login... try again in an hour")
-        print(f"[{user_name}] \t{e}")
+        print(f"[{user_name}] \t{str(e)[0:100]}")
         sleep(60 * 60)
         return login(user_name, password, use_session_file)
     print(f"[{user_name}] \tLogin Successful!")
@@ -199,18 +200,19 @@ def bot(username, password, hashtag, use_session_file=True):
             sleep(60 * 2)
 
 
-def bot_thread(username, password, hashtag):
+def bot_thread(username, password, hashtag, use_session_file=True):
     try:
-        bot(username, password, hashtag)
+        bot(username, password, hashtag, use_session_file)
     except Exception as e:
-        print(f"[{username}] \tBot crashed... restarting", e[0:100])
+        e = str(e)[0:100]
+        print(f"[{username}] \tBot crashed... restarting", e)
         if(e == "login_required"):
             print(f"[{username}] \tLogin required... trying without session file!")
             bot_thread(username, password, hashtag, use_session_file=False)
-            sleep(60 * 60)
         else:
-            bot_thread(username, password, hashtag)
+            print("Trying again in an hour")
             sleep(60 * 60)
+            bot_thread(username, password, hashtag)
 
 
 def main():
