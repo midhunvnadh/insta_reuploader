@@ -41,10 +41,8 @@ def get_sleep_period(cl, username):
         print(f"[{username}] \tHours left: {hours_left}")
     except:
         total_delay = 0
-    if total_delay < 60:
-        total_delay = 60 * 60 * 2
-    elif total_delay < 60 * 5:
-        total_delay = 60 * 7
+    if total_delay < 60 * 5:
+        total_delay = 60 * 10
     elif total_delay > 60 * 60 * 5:
         total_delay = 60 * 60
     return total_delay
