@@ -21,7 +21,7 @@ def hours_until_end_of_today():
 def get_sleep_period(cl, username):
     print(f"[{username}] \tGetting sleep period...")
     n_medias_in_last_24 = 0
-    max_in_24 = 200
+    max_in_24 = 150
     medias = cl.user_medias(cl.user_id, max_in_24)
     for media in medias:
         code = cl.media_pk_from_code(media.code)
@@ -33,13 +33,11 @@ def get_sleep_period(cl, username):
         hours = divmod(duration_in_s, 3600)[0]
         if(hours < 24):
             n_medias_in_last_24 += 1
-        else:
-            break
     try:
         hours_left = hours_until_end_of_today()
         posts_left = (max_in_24 - n_medias_in_last_24)
         time_delay = (hours_left / posts_left) * 60 * 60
-        processing_delay = 60 * 3
+        processing_delay = 60 * 5
         total_delay = time_delay - processing_delay
         print(f"[{username}] \tPosts left: {posts_left}")
         print(f"[{username}] \tHours left: {hours_left}")
