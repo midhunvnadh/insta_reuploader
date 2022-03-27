@@ -22,6 +22,7 @@ def get_sleep_period(cl, username):
     print(f"[{username}] \tGetting sleep period...")
     n_medias_in_last_24 = 0
     max_in_24 = 150
+    processing_delay = 60 * 5
     medias = cl.user_medias(cl.user_id, max_in_24)
     for media in medias:
         uploaded_at = media.taken_at.replace(tzinfo=None)
@@ -35,16 +36,15 @@ def get_sleep_period(cl, username):
         hours_left = hours_until_end_of_today()
         posts_left = (max_in_24 - n_medias_in_last_24)
         time_delay = (hours_left / posts_left) * 60 * 60
-        processing_delay = 60 * 5
         total_delay = time_delay - processing_delay
         print(f"[{username}] \tPosts left: {posts_left}")
         print(f"[{username}] \tHours left: {hours_left}")
     except:
         total_delay = 0
     if total_delay < 60 * 5:
-        total_delay = 60 * 10
+        total_delay = (60 * 10) - processing_delay
     elif total_delay > 60 * 60 * 5:
-        total_delay = 60 * 60
+        total_delay = (60 * 60) - processing_delay
     return total_delay
 
 
