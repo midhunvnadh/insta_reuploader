@@ -183,8 +183,8 @@ def bot(username, password, hashtag, use_session_file=True):
         os.makedirs(f"data/downloads/{username}", exist_ok=False)
 
     cl = login(username, password, use_session_file)
+    sleep_delay = get_sleep_period(cl, username)
     while True:
-        sleep_delay = get_sleep_period(cl, username)
         print(f"[{username}] \tGetting following usernames...")
         monitor_usernames = get_follower_usernames(cl, username)
         if(len(monitor_usernames) > 0):
@@ -205,7 +205,9 @@ def bot_thread(username, password, hashtag, use_session_file=True):
         e = str(e)[0:100]
         print(f"[{username}] \tBot crashed... restarting", e)
         if(e == "login_required"):
-            print(f"[{username}] \tLogin required... trying without session file!")
+            print(
+                f"[{username}] \tLogin required... trying without session file in 5 minutes!")
+            sleep(60 * 5)
             bot_thread(username, password, hashtag, use_session_file=False)
         else:
             print("Trying again in an hour")
