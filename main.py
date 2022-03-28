@@ -219,11 +219,6 @@ def bot_thread(username, password, hashtag, use_session_file=True):
                 f"[{username}] \tLogin required... trying without session file!")
             sleep(60)
             bot_thread(username, password, hashtag, use_session_file=False)
-        if(e == "challenge_required"):
-            print(
-                f"[{username}] \tChallenge required... trying without session file in 5 minutes!")
-            sleep(60 * 5)
-            bot_thread(username, password, hashtag, use_session_file=False)
         else:
             print("Trying again in an hour")
             sleep(60 * 60)
