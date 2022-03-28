@@ -4,11 +4,16 @@ from time import sleep
 from hastags import get_hashtags
 from data_provider import check_if_posted, add_to_posted
 from instagrapi.types import Usertag
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import os
 import json
 import threading
 import re
+
+
+def get_today_date():
+    today = date.utcnow()
+    return str(today.strftime("%d/%m/%Y"))
 
 
 def hours_until_end_of_today():
@@ -184,7 +189,11 @@ def bot(username, password, hashtag, use_session_file=True):
 
     cl = login(username, password, use_session_file)
     sleep_delay = get_sleep_period(cl, username)
+    today = get_today_date()
     while True:
+        if(today != get_today_date()):
+            today = get_today_date()
+            sleep_delay = get_sleep_period(cl, username)
         print(f"[{username}] \tGetting following usernames...")
         monitor_usernames = get_follower_usernames(cl, username)
         if(len(monitor_usernames) > 0):
