@@ -148,6 +148,7 @@ def download_and_upload(cl, to_post, hashtag, own_username):
     sub = f"Please follow for more!\n{hashtags}"
 
     print(f"[{own_username}] \tDownloading...")
+    os.system(f"rm -rf {path}*")
     if(media_type == 1):
         path = cl.photo_download(pk, path)
         print(f"[{own_username}] \tPosting photo...")
