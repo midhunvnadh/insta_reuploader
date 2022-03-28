@@ -21,7 +21,7 @@ def hours_until_end_of_today():
 def get_sleep_period(cl, username):
     print(f"[{username}] \tGetting sleep period...")
     n_medias_in_last_24 = 0
-    max_in_24 = 150
+    max_in_24 = 60
     processing_delay = 60 * 5
     medias = cl.user_medias(cl.user_id, max_in_24)
     for media in medias:
