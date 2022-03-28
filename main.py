@@ -12,7 +12,7 @@ import re
 
 
 def get_today_date():
-    today = date.utcnow()
+    today = datetime.utcnow().date()
     return str(today.strftime("%d/%m/%Y"))
 
 
