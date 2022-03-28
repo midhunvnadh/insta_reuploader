@@ -42,7 +42,7 @@ def get_sleep_period(cl, username):
     except:
         total_delay = 0
     if total_delay < 60 * 5:
-        total_delay = (60 * 10) - processing_delay
+        total_delay = (60 * 25) - processing_delay
     elif total_delay > 60 * 60 * 5:
         total_delay = (60 * 60) - processing_delay
     return total_delay
