@@ -24,6 +24,7 @@ def hours_until_end_of_today():
 
 
 def get_sleep_period(cl, username):
+    return 60 * 60
     print(f"[{username}] \tGetting sleep period...")
     n_medias_in_last_24 = 0
     max_in_24 = 25
