@@ -24,34 +24,12 @@ def hours_until_end_of_today():
 
 
 def get_sleep_period(cl, username):
+    now = datetime.now()
+    current_hour = now.hour
+    if(current_hour > 22):
+        print(f"[{username}] Sleeping for 8 hours")
+        return 60 * 60 * 8
     return 60 * 60
-    print(f"[{username}] \tGetting sleep period...")
-    n_medias_in_last_24 = 0
-    max_in_24 = 25
-    processing_delay = 60 * 5
-    medias = cl.user_medias(cl.user_id, max_in_24)
-    for media in medias:
-        uploaded_at = media.taken_at.replace(tzinfo=None)
-        current_time = datetime.utcnow()
-        difference = current_time - uploaded_at
-        duration_in_s = difference.total_seconds()
-        hours = divmod(duration_in_s, 3600)[0]
-        if(hours < 24):
-            n_medias_in_last_24 += 1
-    try:
-        hours_left = hours_until_end_of_today()
-        posts_left = (max_in_24 - n_medias_in_last_24)
-        time_delay = (hours_left / posts_left) * 60 * 60
-        total_delay = time_delay - processing_delay
-        print(f"[{username}] \tPosts left: {posts_left}")
-        print(f"[{username}] \tHours left: {hours_left}")
-    except:
-        total_delay = 0
-    if total_delay < 60 * 15:
-        total_delay = (60 * 25) - processing_delay
-    elif total_delay > 60 * 60 * 5:
-        total_delay = (60 * 60) - processing_delay
-    return total_delay
 
 
 def get_settings():
