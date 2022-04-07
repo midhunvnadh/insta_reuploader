@@ -16,20 +16,15 @@ def get_today_date():
     return str(today.strftime("%d/%m/%Y"))
 
 
-def hours_until_end_of_today():
-    time_delta = datetime.combine(
-        datetime.utcnow().date() + timedelta(days=1), datetime.strptime("0000", "%H%M").time()
-    ) - datetime.utcnow()
-    return divmod(time_delta.seconds, 3600)[0]
-
-
 def get_sleep_period(cl, username):
     now = datetime.now()
     current_hour = now.hour
+    hours_left = 1.5
     if(current_hour > 22):
-        print(f"[{username}] Sleeping for 8 hours")
-        return 60 * 60 * 8
-    return 60 * 60
+        hours_left = (23 - current_hour) + 6
+    elif(current_hour < 6):
+        hours_left = (6 - current_hour)
+    return 60 * 60 * hours_left
 
 
 def get_settings():
@@ -168,19 +163,14 @@ def bot(username, password, hashtag, use_session_file=True):
         os.makedirs(f"data/downloads/{username}", exist_ok=False)
 
     cl = login(username, password, use_session_file)
-    sleep_delay = get_sleep_period(cl, username)
-    today = get_today_date()
     while True:
-        if(today != get_today_date()):
-            today = get_today_date()
-            sleep_delay = get_sleep_period(cl, username)
         print(f"[{username}] \tGetting following usernames...")
         monitor_usernames = get_follower_usernames(cl, username)
         if(len(monitor_usernames) > 0):
             post_to_account(cl, hashtag, monitor_usernames, username)
+            sleep_delay = get_sleep_period(cl, username)
             print(
                 f"[{username}] \tPosting again in {int(sleep_delay / 60)} minutes...!")
-            sleep(sleep_delay)
         else:
             print(
                 f"[{username}] \tYou are following none... sleeping for 2 minutes")
