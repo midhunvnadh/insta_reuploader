@@ -24,6 +24,8 @@ def get_sleep_period(cl, username):
         hours_left = (23 - current_hour) + 6
     elif(current_hour < 6):
         hours_left = (6 - current_hour)
+    if(hours_left == 0):
+        hours_left = 1.5
     return 60 * 60 * hours_left
 
 
