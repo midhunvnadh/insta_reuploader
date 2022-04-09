@@ -173,6 +173,7 @@ def bot(username, password, hashtag, use_session_file=True):
             sleep_delay = get_sleep_period(cl, username)
             print(
                 f"[{username}] \tPosting again in {int(sleep_delay / 60)} minutes...!")
+            sleep(sleep_delay)
         else:
             print(
                 f"[{username}] \tYou are following none... sleeping for 2 minutes")
