@@ -1,4 +1,3 @@
-from asyncio import subprocess
 from instagrapi import Client
 from time import sleep
 from hastags import get_hashtags
@@ -9,6 +8,14 @@ import os
 import json
 import threading
 import re
+import pip
+
+packages = ['instagrapi']
+
+
+def upgrade_packages():
+    for package in packages:
+        pip.main(['install', '--upgrade', package])
 
 
 def get_today_date():
@@ -211,4 +218,5 @@ def main():
 
 
 if __name__ == "__main__":
+    upgrade_packages()
     main()
