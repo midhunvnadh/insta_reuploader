@@ -19,13 +19,13 @@ def get_today_date():
 def get_sleep_period(cl, username):
     now = datetime.now()
     current_hour = now.hour
-    hours_left = 1.5
+    hours_left = 3
     if(current_hour > 22):
         hours_left = (23 - current_hour) + 6
     elif(current_hour < 6):
         hours_left = (6 - current_hour)
     if(hours_left == 0):
-        hours_left = 1.5
+        hours_left = 2
     return 60 * 60 * hours_left
 
 
