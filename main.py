@@ -10,7 +10,7 @@ import threading
 import re
 import pip
 
-packages = ['instagrapi']
+packages = ['instagrapi', 'bs4']
 
 
 def upgrade_packages():
