@@ -26,7 +26,7 @@ def get_today_date():
 def get_sleep_period(cl, username):
     now = datetime.now()
     current_hour = now.hour
-    hours_left = 3
+    hours_left = 1.5
     if(current_hour > 22):
         hours_left = (23 - current_hour) + 6
     elif(current_hour < 6):
@@ -63,13 +63,17 @@ def get_best_content_to_post(cl, best_pages, username, retreive_count=5):
         try:
             user_id = cl.user_id_from_username(page)
             print(f"[{username}] \tGetting media from page:", page)
+            sleep(10)
             posts = cl.user_medias(user_id, retreive_count)
             for post in posts:
+                sleep(10)
                 pk = cl.media_pk_from_code(post.code)
                 try:
+                    sleep(10)
                     post = cl.media_info(pk).dict()
                 except:
                     try:
+                        sleep(10)
                         post = cl.media_info_gql(pk)
                     except:
                         continue
@@ -107,6 +111,7 @@ def login(user_name, password, use_session_file=True):
             except:
                 pass
         cl.login(user_name, password)
+        sleep(10)
         cl.dump_settings(session_file_path)
     except Exception as e:
         print(f"[{user_name}] \tCouldn't login... try again in an hour")
@@ -124,6 +129,7 @@ def download_and_upload(cl, to_post, hashtag, own_username):
     pk = to_post['pk']
     path = f"data/downloads/{own_username}/"
     posted_username = to_post['user']['username']
+    sleep(10)
     poster_username_tag = Usertag(
         user=cl.user_info_by_username(posted_username), x=0.5, y=0.5)
 
@@ -132,6 +138,7 @@ def download_and_upload(cl, to_post, hashtag, own_username):
 
     print(f"[{own_username}] \tDownloading...")
     os.system(f"rm -rf {path}*")
+    sleep(10)
     if(media_type == 1):
         path = cl.photo_download(pk, path)
         print(f"[{own_username}] \tPosting photo...")
@@ -159,11 +166,13 @@ def post_to_account(cl, hashtag, monitor_usernames, username):
 
 def get_follower_usernames(cl, username):
     usernames = []
+    sleep(10)
     following_ids = cl.user_following(cl.user_id, 0)
     for following_id in following_ids:
         following_username = cl.username_from_user_id(following_id)
         print(f"[{username}] \tFound {following_username} as a following account.")
         usernames.append(following_username)
+        sleep(10)
     return usernames
 
 
